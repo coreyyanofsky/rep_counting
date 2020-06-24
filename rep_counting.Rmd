@@ -112,12 +112,13 @@ unpad <- function(x) x[50:(length(x) - 50)]
 sswt_res <- sswt(tt, unpad(situps_y), nv = 32, opt = list(type = "morlet"))
 q <- 200
 fs <- sswt_res$fs[1:q]
+sc <- sswt_res$asc[1:q]
 z <- t(Mod(sswt_res$Wx[1:q,]))
 ssz <- t(Mod(sswt_res$Tx[1:q,]))
 
 layout(matrix(c(1,1,2,2,2,3,3,3), ncol = 1))
 plot_1axis(tt,  unpad(situps_y), ylab = "PC1", xlim = c(2, max(tt)), xaxs = "i")
-image(tt, fs, z, xlab = "", ylab = "freq")
+image(tt, sc, z, xlab = "", ylab = "scale")
 image(tt, fs, ssz, xlab = "", ylab = "freq")
 
 ```
@@ -131,11 +132,12 @@ sswt_res <- sswt(tt, unpad(crunches_y), nv = 32, opt = list(type = "morlet"))
 q <- 200
 fs <- sswt_res$fs[1:q]
 z <- t(Mod(sswt_res$Wx[1:q,]))
+sc <- sswt_res$asc[1:q]
 ssz <- t(Mod(sswt_res$Tx[1:q,]))
 
 layout(matrix(c(1,1,2,2,2,3,3,3), ncol = 1))
 plot_1axis(tt, unpad(crunches_y), ylab = "PC1", xlim = c(2, max(tt)), xaxs = "i")
-image(tt, fs, z, xlab = "", ylab = "freq")
+image(tt, sc, z, xlab = "", ylab = "scale")
 image(tt, fs, ssz, xlab = "", ylab = "freq")
 
 ```
