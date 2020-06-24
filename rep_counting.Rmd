@@ -1,0 +1,28 @@
+---
+title: "Exercise Repetition Counting"
+author: "Corey Yanofsky"
+date: "6/23/2020"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Gymtrack
+
+
+## 6-axis motion sensor
+
+image from https://www.ceva-dsp.com/ourblog/what-is-an-imu-sensor/
+
+## Crunches
+
+## Sit-ups
+
+## Re-aligning data
+
+## Detecting repetitive motion
+
+## 
+
