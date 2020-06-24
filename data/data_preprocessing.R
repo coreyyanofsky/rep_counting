@@ -42,6 +42,6 @@ downsample_from_1000Hz_to_25Hz <- function(dat) {
 
 situps <- preprocess_exercise_data(raw_situps)
 crunches <- preprocess_exercise_data(raw_crunches)
-saveRDS(situps, "situps.Rds")
-saveRDS(crunches, "crunches.Rds")
+saveRDS(situps, file.path(datadir, "situps.Rds"))
+saveRDS(crunches, file.path(datadir, "crunches.Rds"))
 
