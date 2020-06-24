@@ -8,6 +8,7 @@ output: slidy_presentation
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 import::from("rospca", "robpca")
+import::from("SynchWave", cwt = "cwt_fw", sswt = "synsq_cwt_fw")
 datadir <- file.path(here::here(), "data")
 crunches <- readRDS(file.path(datadir, "crunches.Rds"))
 situps <- readRDS(file.path(datadir, "situps.Rds"))
@@ -16,16 +17,20 @@ situps <- readRDS(file.path(datadir, "situps.Rds"))
 
 ```{r functions, echo = FALSE}
 
+plot_1axis <- function(t, y, ylab, ...) {
+  par(mar = c(1.7, 4, 0.5,0.3))
+    plot(t,y, type = "n", ylab = ylab, xlab = "", ...)
+    points(t,y, type = "l")
+    abline(h=0,col = gray(0.4),lty = 3)
+}
+
 plot_6axis <- function(dat, main = NULL, ...)
 {
   layout(matrix(1:6,ncol = 1))
   for(i in 2:7)
   {
-    par(mar = c(1.7, 4, 0.5,0.3))
-    plot(dat$time,dat[[i]], type = "n", ylab = paste(main, names(dat)[i]), xlab = "", ...)
-    points(dat$time,dat[[i]], type = "l")
-    ylim <- par("usr")[3:4]
-    abline(h=0,col = gray(0.4),lty = 3)
+    ylab <- paste(main, names(dat)[i])
+    plot_1axis(dat$time, dat[[i]], ylab, ...)
   }
 }
 ```
@@ -52,7 +57,7 @@ plot_6axis(crunches)
 plot_6axis(situps)
 ```
 
-## Realign data (situps)
+## Realigning data with PCA (sit-ups)
 
 ```{r pca}
 temp <- situps[176 + 1:100,]
@@ -66,7 +71,7 @@ plot_6axis(temp)
 
 ```
 
-## Rolling PCA (situps)
+## Rolling PCA (sit-ups)
 ```{r rolling pca situps}
 
 realign_data <- function(dat) {
@@ -87,7 +92,7 @@ realign_data <- function(dat) {
 
 temp <- realign_data(situps)
 plot_6axis(temp)
-situps_y <- temp[[4]]
+situps_y <- temp[[5]]
 
 ```
 
@@ -95,13 +100,43 @@ situps_y <- temp[[4]]
 ```{r rolling pca crunches}
 temp <- realign_data(crunches)
 plot_6axis(temp)
-crunches_y <- temp[[4]]
+crunches_y <- temp[[5]]
 ```
 
-## Detecting repetitive motion (situps)
+## Detecting repetitive motion (sit-ups)
 
 ```{r synchrosqueezing wavelet transform situps}
 
+tt <- seq(2, by = 0.04, length.out = nrow(situps) - 99)
+unpad <- function(x) x[50:(length(x) - 50)]
+sswt_res <- sswt(tt, unpad(situps_y), nv = 32, opt = list(type = "morlet"))
+q <- 200
+fs <- sswt_res$fs[1:q]
+z <- t(Mod(sswt_res$Wx[1:q,]))
+ssz <- t(Mod(sswt_res$Tx[1:q,]))
 
-## 
+layout(matrix(c(1,1,2,2,2,3,3,3), ncol = 1))
+plot_1axis(tt,  unpad(situps_y), ylab = "PC1", xlim = c(2, max(tt)), xaxs = "i")
+image(tt, fs, z, xlab = "", ylab = "freq")
+image(tt, fs, ssz, xlab = "", ylab = "freq")
+
+```
+
+## Detecting repetitive motion (crunches)
+
+```{r synchrosqueezing wavelet transform crunches}
+
+tt <- seq(2, by = 0.04, length.out = nrow(crunches) - 99) 
+sswt_res <- sswt(tt, unpad(crunches_y), nv = 32, opt = list(type = "morlet"))
+q <- 200
+fs <- sswt_res$fs[1:q]
+z <- t(Mod(sswt_res$Wx[1:q,]))
+ssz <- t(Mod(sswt_res$Tx[1:q,]))
+
+layout(matrix(c(1,1,2,2,2,3,3,3), ncol = 1))
+plot_1axis(tt, unpad(crunches_y), ylab = "PC1", xlim = c(2, max(tt)), xaxs = "i")
+image(tt, fs, z, xlab = "", ylab = "freq")
+image(tt, fs, ssz, xlab = "", ylab = "freq")
+
+```
 
